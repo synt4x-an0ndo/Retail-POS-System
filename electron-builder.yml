@@ -1,0 +1,39 @@
+appId: com.therawbros.pos
+productName: The Raw Bros POS
+copyright: Copyright © The Raw Bros – Retail POS Solutions
+directories:
+  output: release
+  buildResources: build
+files:
+  - out/**/*
+  - package.json
+extraResources:
+  - from: resources/raw-print.ps1
+    to: raw-print.ps1
+asar: true
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  executableName: TheRawBrosPOS
+  artifactName: TheRawBros-POS-Setup-${version}.${ext}
+nsis:
+  oneClick: false
+  perMachine: true
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: The Raw Bros POS
+  deleteAppDataOnUninstall: false
+# Electron fuses: harden the packaged binary.
+electronFuses:
+  runAsNode: false
+  enableCookieEncryption: true
+  enableNodeOptionsEnvironmentVariable: false
+  enableNodeCliInspectArguments: false
+  enableEmbeddedAsarIntegrityValidation: true
+  onlyLoadAppFromAsar: true
+# Updates: point this at the private HTTPS update server before release.
+publish:
+  provider: generic
+  url: https://updates.example.invalid/therawbros-pos/
