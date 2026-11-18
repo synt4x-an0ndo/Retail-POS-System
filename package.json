@@ -1,7 +1,7 @@
 {
   "name": "therawbros-pos",
   "productName": "The Raw Bros POS",
-  "version": "1.1.0",
+  "version": "1.2.1",
   "description": "Garments Retail POS - The Raw Bros Retail POS Solutions",
   "author": "The Raw Bros",
   "license": "UNLICENSED",
@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "dist": "electron-vite build && electron-builder --win --x64",
     "seed:demo": "vite build --config scripts/vite.seed.config.mts --logLevel warn && node out/seed/seed-demo.cjs",
-    "test:core":"vite build --config scripts/vite.test.config.mts --logLevel warn && node out/test/smoke-test.cjs"
+    "test:core": "vite build --config scripts/vite.test.config.mts --logLevel warn && node out/test/smoke-test.cjs"
   },
   "dependencies": {
     "bcryptjs": "3.0.3",

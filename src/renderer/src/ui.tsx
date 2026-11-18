@@ -9,6 +9,7 @@ import {
   type ButtonHTMLAttributes,
   type ReactNode
 } from 'react'
+import { createPortal } from 'react-dom'
 import type { Permission } from '@shared/permissions'
 import { ApiError, call, isOverride } from './api'
 import { Icon, type IconName } from './icons'
@@ -293,10 +294,43 @@ export function Kpi(props: { icon: IconName; label: string; value: ReactNode; fo
         </span>
         {props.label}
       </div>
-      <div className="value num">{props.value}</div>
+      <div className="value num">{typeof props.value === 'string' || typeof props.value === 'number' ? <CountUp text={String(props.value)} /> : props.value}</div>
       {props.foot && <div className="foot">{props.foot}</div>}
     </div>
   )
+}
+
+/** Animates the first number inside a formatted string (e.g. "৳12,345.50") from 0 up to its value. */
+export function CountUp({ text, ms = 650 }: { text: string; ms?: number }) {
+  const m = text.match(/-?\d[\d,]*(\.\d+)?/)
+  const target = m ? Number(m[0].replace(/,/g, '')) : NaN
+  const [shown, setShown] = useState(text)
+  useEffect(() => {
+    if (!m || !isFinite(target) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setShown(text)
+      return
+    }
+    const decimals = m[1] ? m[1].length - 1 : 0
+    const grouped = m[0].includes(',')
+    const fmt = (v: number) => {
+      const s = v.toFixed(decimals)
+      if (!grouped) return s
+      const [i, d] = s.split('.')
+      return i.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (d ? '.' + d : '')
+    }
+    const start = performance.now()
+    let raf = 0
+    const step = (now: number) => {
+      const p = Math.min(1, (now - start) / ms)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setShown(text.replace(m[0], fmt(target * eased)))
+      if (p < 1) raf = requestAnimationFrame(step)
+    }
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [text])
+  return <>{shown}</>
 }
 
 export function Delta({ now, before, suffix = 'vs yesterday' }: { now: number; before: number; suffix?: string }) {
@@ -437,7 +471,7 @@ export function Dialog(props: {
       {props.footer && <div className="dialog-foot">{typeof props.footer === 'function' ? props.footer(close) : props.footer}</div>}
     </>
   )
-  return (
+  return createPortal(
     <div ref={ref} className={'overlay' + (closing ? ' closing' : '')} onMouseDown={(e) => e.target === e.currentTarget && close()}>
       {props.onSubmit ? (
         <form
@@ -456,14 +490,15 @@ export function Dialog(props: {
           {body}
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   )
 }
 
 /** Side sheet: the desktop counterpart of a mobile bottom sheet, for details and long forms. */
 export function Sheet(props: { title: ReactNode; description?: ReactNode; onClose: () => void; footer?: Footer; children: ReactNode; wide?: boolean; headerExtra?: ReactNode }) {
   const { closing, close, ref } = useClosable(props.onClose)
-  return (
+  return createPortal(
     <div ref={ref} className={'overlay sheet-host' + (closing ? ' closing' : '')} onMouseDown={(e) => e.target === e.currentTarget && close()}>
       <div className={'sheet' + (props.wide ? ' wide' : '')} role="dialog" aria-modal="true">
         <div className="dialog-head">
@@ -477,7 +512,8 @@ export function Sheet(props: { title: ReactNode; description?: ReactNode; onClos
         <div className="dialog-body">{props.children}</div>
         {props.footer && <div className="dialog-foot">{typeof props.footer === 'function' ? props.footer(close) : props.footer}</div>}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 

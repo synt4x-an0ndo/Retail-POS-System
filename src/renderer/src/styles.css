@@ -594,3 +594,114 @@ textarea.input { height: auto; padding: var(--s-2) var(--s-3); resize: vertical;
 .health .ring { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; flex: none; }
 .health .ring.good { background: var(--success-50); color: var(--success-600); }
 .health .ring.warn { background: var(--warning-50); color: var(--warning-600); }
+
+/* ==========================================================================
+   POLISH LAYER — refined surfaces and restrained motion on top of the base system.
+   Solid brand colour, crisp 1px borders, layered soft shadows, short eased transitions.
+   ========================================================================== */
+:root {
+  --e-1: 0 1px 2px rgba(16, 24, 40, 0.06), 0 0 0 1px rgba(16, 24, 40, 0.02);
+  --e-2: 0 1px 3px rgba(16, 24, 40, 0.06), 0 6px 16px -4px rgba(16, 24, 40, 0.08);
+  --e-3: 0 4px 8px -2px rgba(16, 24, 40, 0.06), 0 16px 32px -8px rgba(16, 24, 40, 0.14);
+  --hairline-top: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+/* ---- Page entrance: one short fade-up, cards follow with a small stagger ---- */
+.page { animation: page-in 260ms var(--ease-out); }
+/* Reserve the scrollbar's space so content never jumps 10px when a scrollbar appears/disappears
+   (e.g. while a list loads). Full-height screens (Checkout) fade only: a slide would overflow and flash a scrollbar. */
+.main { scrollbar-gutter: stable; }
+.page.full { animation: fade-in 200ms var(--ease-out); }
+/* Rows fade in place: a slide would overflow the scrollable .table-wrap and flash its scrollbar, narrowing the table. */
+@keyframes row-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes page-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.page .grid > * { animation: card-in 340ms var(--ease-out) both; }
+.page .grid > :nth-child(2) { animation-delay: 30ms; }
+.page .grid > :nth-child(3) { animation-delay: 60ms; }
+.page .grid > :nth-child(4) { animation-delay: 90ms; }
+.page .grid > :nth-child(n + 5) { animation-delay: 120ms; }
+@keyframes card-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ---- Cards ---- */
+.card { border-color: var(--n-150); box-shadow: var(--e-1); }
+.card.interactive { transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out), border-color 160ms; }
+.card.interactive:hover { transform: translateY(-2px); box-shadow: var(--e-3); border-color: var(--n-200); }
+
+/* ---- KPI tiles ---- */
+.kpi { transition: box-shadow 220ms var(--ease-out), border-color 160ms; }
+.kpi:hover { box-shadow: var(--e-2); border-color: var(--n-200); }
+.kpi .label .ico { width: 28px; height: 28px; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(16, 24, 40, 0.04); }
+.kpi .value { font-size: 28px; font-weight: 700; letter-spacing: -0.025em; }
+
+/* ---- Buttons: subtle top sheen, solid fill, tactile press ---- */
+.btn { border-radius: 9px; transition: background-color 140ms, border-color 140ms, color 140ms, box-shadow 160ms, transform 120ms var(--ease-out); }
+.btn:not(.primary):not(.success):not(.solid):not(.ghost) { background-image: linear-gradient(180deg, #fff 0%, var(--n-25) 100%); }
+.btn:not(.primary):not(.success):not(.solid):not(.ghost):hover:not(:disabled) { background-image: none; background-color: var(--n-50); }
+.btn:active:not(:disabled) { transform: scale(0.98); }
+.btn.primary { background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0)); box-shadow: 0 1px 2px rgba(47, 60, 191, 0.35), 0 2px 6px -1px rgba(47, 60, 191, 0.25), var(--hairline-top); }
+.btn.primary:hover:not(:disabled) { box-shadow: 0 1px 2px rgba(47, 60, 191, 0.4), 0 4px 10px -2px rgba(47, 60, 191, 0.35), var(--hairline-top); }
+.btn.success { background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0)); box-shadow: 0 1px 2px rgba(15, 122, 71, 0.35), 0 2px 6px -1px rgba(15, 122, 71, 0.25), var(--hairline-top); }
+.btn.success:hover:not(:disabled) { box-shadow: 0 1px 2px rgba(15, 122, 71, 0.4), 0 4px 10px -2px rgba(15, 122, 71, 0.35), var(--hairline-top); }
+.btn.danger.solid { background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0)); box-shadow: 0 1px 2px rgba(176, 36, 36, 0.35), var(--hairline-top); }
+
+/* ---- Inputs ---- */
+.input, .select, .affix { border-radius: 9px; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04); }
+.affix .input { box-shadow: none; }
+.input:focus, .select:focus, .affix:focus-within { box-shadow: 0 0 0 3px rgba(58, 75, 224, 0.16), 0 1px 2px rgba(16, 24, 40, 0.04); }
+
+/* ---- Segmented / tabs: smoother thumb travel ---- */
+.seg .seg-thumb { box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08), 0 0 0 1px rgba(16, 24, 40, 0.04); transition: left 260ms var(--ease-out), width 260ms var(--ease-out); }
+.tabs .ink { transition: left 260ms var(--ease-out), width 260ms var(--ease-out); }
+
+/* ---- Sidebar ---- */
+.sidebar { border-right: 1px solid rgba(255, 255, 255, 0.04); }
+.nav-item { transition: background-color 140ms, color 140ms; }
+.nav-item.active { background: rgba(255, 255, 255, 0.09); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06); }
+.nav-item.active::before { animation: accent-in 220ms var(--ease-out); }
+@keyframes accent-in { from { transform: scaleY(0.3); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ---- Tables ---- */
+.table tbody tr.click:hover td { background: var(--n-50); }
+
+/* ---- Overlays ---- */
+.overlay { background: rgba(11, 13, 17, 0.45); backdrop-filter: blur(3px); }
+.dialog { box-shadow: 0 0 0 1px rgba(16, 24, 40, 0.06), 0 24px 48px -12px rgba(16, 24, 40, 0.3); animation: pop-in 220ms var(--ease-out); }
+@keyframes pop-in { from { opacity: 0; transform: translateY(6px) scale(0.98); } to { opacity: 1; transform: none; } }
+.sheet { box-shadow: 0 0 0 1px rgba(16, 24, 40, 0.06), -16px 0 40px -12px rgba(16, 24, 40, 0.25); animation: sheet-in 260ms var(--ease-out); }
+@keyframes sheet-in { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ---- Toasts ---- */
+.toast { border: 1px solid rgba(255, 255, 255, 0.06); animation: toast-in 240ms var(--ease-out); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ---- Charts ---- */
+.chart .bar { animation-duration: 520ms; }
+.hbar .fill { animation-duration: 600ms; }
+
+/* ---- POS ---- */
+.scan-box { box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 4px 12px -4px rgba(16, 24, 40, 0.08); }
+.cart-line { transition: background-color 600ms; }
+.cart-line:hover { background: var(--n-25); }
+.paytile { transition: border-color 140ms, background-color 140ms, box-shadow 160ms, transform 120ms var(--ease-out); }
+.paytile:hover { box-shadow: var(--e-1); }
+.paytile.on { box-shadow: 0 0 0 3px color-mix(in srgb, var(--pc, var(--primary)) 14%, transparent); }
+.receipt-paper { animation: receipt-in 360ms var(--ease-out) both; }
+@keyframes receipt-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+/* ---- Collapsible sidebar (toggle button / Ctrl+B). Icons keep their x-position; only the labels fade. ---- */
+.app { transition: grid-template-columns 220ms var(--ease-out); }
+.app.collapsed { grid-template-columns: 68px 1fr; }
+.sidebar { overflow-x: hidden; }
+.nav-item, .brandmark, .usercard { white-space: nowrap; }
+.nav-label, .nav-item .kbd, .brandmark > div, .nav-section { transition: opacity 160ms var(--ease-out); }
+.app.collapsed .nav-label, .app.collapsed .nav-item .kbd, .app.collapsed .brandmark > div { opacity: 0; pointer-events: none; }
+.app.collapsed .nav-section { color: transparent; position: relative; }
+.app.collapsed .nav-section::after { content: ''; position: absolute; left: 12px; width: 20px; top: 50%; height: 1px; background: rgba(255, 255, 255, 0.1); }
+.app.collapsed .nav-item { width: 44px; }
+.app.collapsed .nav-item .count { position: absolute; top: 3px; left: 26px; margin: 0; padding: 0 5px; font-size: 10px; line-height: 15px; }
+.app.collapsed .usercard { padding: 4px; justify-content: center; }
+.app.collapsed .usercard .grow, .app.collapsed .usercard-avatar { display: none; }
+.collapse-toggle { color: #7d8596; margin-bottom: var(--s-2); }
+.collapse-toggle .kbd { opacity: 0.6; }
+.nav-item.active svg { color: #a3adff; }
+@media (max-width: 1180px) { .collapse-toggle { display: none; } }

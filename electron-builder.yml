@@ -16,6 +16,7 @@ win:
     - target: nsis
       arch: [x64]
   executableName: TheRawBrosPOS
+  icon: build/icon.ico
   artifactName: TheRawBros-POS-Setup-${version}.${ext}
 nsis:
   oneClick: false
@@ -24,6 +25,9 @@ nsis:
   createDesktopShortcut: always
   createStartMenuShortcut: true
   shortcutName: The Raw Bros POS
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeaderIcon: build/icon.ico
   deleteAppDataOnUninstall: false
 # Electron fuses: harden the packaged binary.
 electronFuses:

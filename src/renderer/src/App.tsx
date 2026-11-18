@@ -21,15 +21,15 @@ const NAV: { section: string; items: NavItem[] }[] = [
     section: 'Sell',
     items: [
       { id: 'dashboard', label: 'Overview', icon: 'dashboard', perm: null },
-      { id: 'pos', label: 'Checkout', icon: 'scan', perm: 'pos.sell', key: 'F1' },
+      { id: 'pos', label: 'Checkout', icon: 'bag', perm: 'pos.sell', key: 'F1' },
       { id: 'sales', label: 'Transactions', icon: 'receipt', perm: 'sales.view' }
     ]
   },
   {
     section: 'Catalogue',
     items: [
-      { id: 'products', label: 'Products', icon: 'tag', perm: 'product.view' },
-      { id: 'stock', label: 'Inventory', icon: 'layers', perm: 'product.view' }
+      { id: 'products', label: 'Products', icon: 'shirt', perm: 'product.view' },
+      { id: 'stock', label: 'Inventory', icon: 'box', perm: 'product.view' }
     ]
   },
   { section: 'Insights', items: [{ id: 'reports', label: 'Reports', icon: 'chart', perm: 'report.view' }] },
@@ -37,8 +37,8 @@ const NAV: { section: string; items: NavItem[] }[] = [
     section: 'Admin',
     items: [
       { id: 'users', label: 'Team', icon: 'users', perm: 'user.manage' },
-      { id: 'backup', label: 'Backup', icon: 'database', perm: 'backup.manage' },
-      { id: 'activity', label: 'Activity log', icon: 'activity', perm: 'log.view' },
+      { id: 'backup', label: 'Backup', icon: 'harddrive', perm: 'backup.manage' },
+      { id: 'activity', label: 'Activity log', icon: 'history', perm: 'log.view' },
       { id: 'settings', label: 'Settings', icon: 'settings', perm: 'settings.manage' }
     ]
   }
@@ -53,6 +53,23 @@ export default function App() {
   const [toasts, setToasts] = useState<Toast[]>([])
   const [pinAsk, setPinAsk] = useState<{ message: string; resolve: (p: string | null) => void } | null>(null)
   const [lowCount, setLowCount] = useState(0)
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('sidebar-collapsed') === '1'
+    } catch {
+      return false
+    }
+  })
+  const toggleSidebar = useCallback(() => {
+    setCollapsed((c) => {
+      try {
+        localStorage.setItem('sidebar-collapsed', c ? '0' : '1')
+      } catch {
+        /* preference only */
+      }
+      return !c
+    })
+  }, [])
 
   const reloadSettings = useCallback(async () => {
     setSettings(await call('settings.get'))
@@ -124,10 +141,14 @@ export default function App() {
         e.preventDefault()
         go('pos')
       }
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'b' && user) {
+        e.preventDefault()
+        toggleSidebar()
+      }
     }
     window.addEventListener('keydown', h)
     return () => window.removeEventListener('keydown', h)
-  }, [user, can, go])
+  }, [user, can, go, toggleSidebar])
 
   const ctx = useMemo(() => (user ? { user, settings, reloadSettings, can, notify, askPin, go } : null), [user, settings, reloadSettings, can, notify, askPin, go])
 
@@ -154,7 +175,7 @@ export default function App() {
 
   return (
     <AppContext.Provider value={ctx}>
-      <div className="app">
+      <div className={'app' + (collapsed ? ' collapsed' : '')}>
         <aside className="sidebar">
           <div className="brandmark">
             <span className="logo">RB</span>
@@ -176,6 +197,11 @@ export default function App() {
             </div>
           ))}
           <div className="spacer" />
+          <button className="nav-item collapse-toggle" onClick={toggleSidebar} title={collapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'} aria-expanded={!collapsed}>
+            <Icon name={collapsed ? 'panelOpen' : 'panelClose'} size={18} />
+            <span className="nav-label">Collapse</span>
+            <span className="kbd">Ctrl B</span>
+          </button>
           <div className="usercard" title={user.name}>
             <span className="usercard-avatar">
               <Avatar name={user.name} />

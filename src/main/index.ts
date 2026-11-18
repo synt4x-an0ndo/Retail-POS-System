@@ -45,6 +45,8 @@ function createWindow() {
     show: false,
     backgroundColor: '#f4f5f7',
     title: 'The Raw Bros POS',
+    // Installed app takes its icon from the .exe; in development point at the source icon.
+    icon: app.isPackaged ? undefined : join(__dirname, '../../build/icon.ico'),
     autoHideMenuBar: true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
